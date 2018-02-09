@@ -1,3 +1,4 @@
+import './index.css'
 import { Observable } from 'rxjs';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -110,9 +111,24 @@ const store = createStore(reducer, applyMiddleware(epicMiddleware));
 
 // COMPONENTS
 const Square = ({children, onClick}) =>
-  <div onClick={onClick} style={{width: '50px', height: '50px', border: '1px solid black'}}>
-    {children}
+  <div onClick={onClick} className='Square'>
+    <div className='Square--content'>
+      {children}
+    </div>
   </div>
+
+const Board = ({board, playerAction}) =>
+  board.map((row, yIndex) => (
+    <div key={yIndex} className='Row'>
+      {
+        row.map((value, xIndex) => (
+          <Square key={xIndex} onClick={playerAction.bind(null, {x:xIndex, y:yIndex})}>
+            {value}
+          </Square>
+        ))
+      }
+    </div>
+  ))
 
 const TicTacToe = ({board, playerAction, player, error, winner, resetBoard}) =>
   <div>
@@ -123,25 +139,14 @@ const TicTacToe = ({board, playerAction, player, error, winner, resetBoard}) =>
         <h1>Player {player} click:</h1>
       )
     }
+    <Board board={board} playerAction={playerAction}/>
     {
-      board.map((row, yIndex) => (
-        <div key={yIndex} style={{display: 'flex', flexDirection: 'row'}}>
-          {
-            row.map((value, xIndex) => (
-              <Square key={xIndex} onClick={playerAction.bind(null, {x:xIndex, y:yIndex})}>
-                {value}
-              </Square>
-            ))
-          }
-        </div>
-      ))
-    }
-    {
-      error && <span style={{color: 'red', fontWeight: 'bold'}}>{error}</span>
+      error &&
+        <span className='Error'>{error}</span>
     }
     {
       winner &&
-        <span onClick={resetBoard} style={{pointer: 'cursor', color: 'blue'}}>reset board</span>
+        <span onClick={resetBoard} className='Reset'>reset board</span>
     }
   </div>
 
